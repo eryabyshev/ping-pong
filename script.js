@@ -13,6 +13,24 @@
         player2 = doc.querySelector('.player2');
 
 
+    function returnPosition(){
+      player1.style.top = 0;
+      player1.style.left = 0;
+
+      player2.style.top = playground.offsetHeight - player2.offsetHeight + 'px';
+
+      counterY = playground.offsetHeight / 2;
+      counterX = playground.offsetWidth / 2;
+
+      ball.style.top = playground.offsetHeight / 2 + 'px';
+      ball.style.left = playground.offsetWidth / 2 + 'px';
+
+
+    }
+
+    returnPosition();
+
+
 
 
 
@@ -51,10 +69,6 @@
            moveDown = true;
        }
 
-
-       var topBall = counterY,
-           bottomBall = counterY + ball.offsetHeight;
-
        if(counterX === player2.offsetLeft - ball.offsetWidth
        && (topBall >= player2.offsetTop && topBall <= player2.offsetTop + player2.offsetHeight)){
            moveRight = !moveRight;
@@ -70,7 +84,7 @@
        ball.style.top = counterY + 'px';
     }
 
-    setInterval(ballMove, 10);
+    
 
 
     function platformUp(platform){
@@ -81,18 +95,32 @@
             return;
         }
 
-        platform.style.top = (y - 1 + 'px');
+        for(var i = 0; i < 10; i++){
+          if(platform.offsetTop <= 0){
+            break;
+          }
+          platform.style.top = (y - i + 'px');
+        }
     }
+
+    
 
 
     function platformDown(platform){
         var y = platform.offsetTop;
 
-        if(y + 1 + platform.offsetHeight > playground.offsetHeight - 2){
+        if(y + 1 + platform.offsetHeight >= playground.offsetHeight - 2){
             return
         }
 
-        platform.style.top = (y + 1 + 'px');
+        for(var i = 0; i < 10; i++){
+          if(platform.offsetTop + platform.offsetHeight >= playground.offsetHeight - 2){
+            break;
+          }
+          platform.style.top = (y + i + 'px');
+        }
+
+       
 
     }
 
@@ -100,17 +128,43 @@
     document.addEventListener('keydown', function (event) {
         console.log(event.key);
         if(event.key === 'ArrowUp'){
-            platformUp(player1);
-        }
-        else if(event.key === "ArrowDown"){
-            platformDown(player1);
-        }
-        else if(event.key === 'w' || event.key === 'W'){
             platformUp(player2);
         }
-        else if(event.key === 'S' || event.key === 's'){
+        else if(event.key === "ArrowDown"){
+
+            
             platformDown(player2);
         }
+        else if(event.key === 'w' || event.key === 'W'){
+            platformUp(player1);
+        }
+        else if(event.key === 'S' || event.key === 's'){
+            platformDown(player1);
+        }
+    });
+
+
+
+    document.addEventListener('mousemove', function(event){
+
+      console.log(event);
+      console.log(player1.getBoundingClientRect());
+
+      if(event.clientY > player1.getBoundingClientRect().top + (player1.offsetHeight / 2)){
+        platformDown(player1);
+      }
+      else if(event.clientY < player1.getBoundingClientRect().top + (player1.offsetHeight / 2)){
+        platformUp(player1);
+      }
+    });
+
+
+    document.addEventListener('keydown', function(event){
+
+      if(event.key === ' '){
+        setInterval(ballMove, 10);
+      }
+
     });
 
 
