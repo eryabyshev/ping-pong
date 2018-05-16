@@ -10,7 +10,9 @@
         counterY = 0,
         moveDown = true,
         player1 = doc.querySelector('.player1'),
-        player2 = doc.querySelector('.player2');
+        player2 = doc.querySelector('.player2'),
+        speed = 0.1,
+        hardLevel = 28;
 
 
     function returnPosition(){
@@ -31,7 +33,32 @@
     returnPosition();
 
 
+    function bot(){
 
+
+      if(moveRight && counterX <= playground.offsetWidth / 2){
+        return;
+      }
+
+      var direct = Math.floor(Math.random() * 2),
+          mistake = Math.floor(Math.random() * (hardLevel - 1)),
+          willMistake = Math.floor(Math.random() * hardLevel / 10);
+
+
+      mistake = direct === 0 ? mistake *= -1 : mistake;
+      mistake *= willMistake;
+
+
+      if(parseInt(ball.style.top) >= 
+        parseInt(player2.style.top) + player2.offsetHeight / 2 + mistake){
+        platformDown(player2, 'bot');
+      }
+      else if(parseInt(ball.style.top) <= 
+        parseInt(player2.style.top) + player2.offsetHeight / 2 + mistake){
+        platformUp(player2, 'bot');
+      }
+
+    }
 
 
 
@@ -70,13 +97,13 @@
        }
 
        if(counterX === player2.offsetLeft - ball.offsetWidth
-       && (topBall >= player2.offsetTop && topBall <= player2.offsetTop + player2.offsetHeight)){
+       && (counterY >= player2.offsetTop && counterY <= player2.offsetTop + player2.offsetHeight)){
            moveRight = !moveRight;
        }
 
 
        else if(counterX === player1.offsetLeft + player1.offsetWidth
-       && (topBall >= player1.offsetTop && topBall <= player1.offsetTop + player1.offsetHeight)){
+       && (counterY >= player1.offsetTop && counterY <= player1.offsetTop + player1.offsetHeight)){
            moveRight = !moveRight;
        }
 
@@ -87,7 +114,7 @@
     
 
 
-    function platformUp(platform){
+    function platformUp(platform, playerType){
 
         var y = platform.offsetTop;
 
@@ -95,33 +122,43 @@
             return;
         }
 
-        for(var i = 0; i < 10; i++){
-          if(platform.offsetTop <= 0){
-            break;
-          }
+        if(playerType === 'bot'){
+          platform.style.top = (y - 1 + 'px');
+        }
+
+        else{
+          for(var i = 0; i < 10; i++){
+            if(platform.offsetTop <= 0){
+              break;
+            }
           platform.style.top = (y - i + 'px');
+          }
+
         }
     }
 
     
 
 
-    function platformDown(platform){
+    function platformDown(platform, playerType){
         var y = platform.offsetTop;
+
 
         if(y + 1 + platform.offsetHeight >= playground.offsetHeight - 2){
             return
         }
 
-        for(var i = 0; i < 10; i++){
-          if(platform.offsetTop + platform.offsetHeight >= playground.offsetHeight - 2){
-            break;
-          }
-          platform.style.top = (y + i + 'px');
+        if(playerType === 'bot'){
+          platform.style.top = (y + 1 + 'px');
         }
-
-       
-
+        else{
+          for(var i = 0; i < 10; i++){
+            if(platform.offsetTop + platform.offsetHeight >= playground.offsetHeight - 2){
+              break;
+            }
+          platform.style.top = (y + i + 'px');
+          }
+        }
     }
 
 
@@ -162,13 +199,11 @@
     document.addEventListener('keydown', function(event){
 
       if(event.key === ' '){
-        setInterval(ballMove, 10);
+        setInterval(ballMove, speed);
+        setInterval(bot, speed);
       }
 
     });
-
-
-
 
 
 })();
